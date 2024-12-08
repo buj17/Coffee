@@ -1,20 +1,17 @@
 import sqlite3
 import sys
 
-from PyQt6 import uic
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget
-from PyQt6.QtWidgets import QTableWidget, QTableWidgetItem, QPushButton, QDoubleSpinBox
+from PyQt6.QtWidgets import QTableWidgetItem
+from UI import addEditCoffeeForm_ui, main_ui
 
 
-class Main(QMainWindow):
+class Main(QMainWindow, main_ui.Ui_MainWindow):
     def __init__(self):
         super().__init__()
-        uic.loadUi('main.ui', self)
-        self.connection = sqlite3.connect('coffee.sqlite3')
-        self.tableWidget: QTableWidget = self.tableWidget
-        self.addButton: QPushButton = self.addButton
-        self.editButton: QPushButton = self.editButton
+        self.setupUi(self)
+        self.connection = sqlite3.connect('data/coffee.sqlite3')
         self.coffee_data = None
         self.load_table()
 
@@ -68,13 +65,13 @@ class Main(QMainWindow):
         self.connection.close()
 
 
-class addEditCoffeeForm(QWidget):
+class addEditCoffeeForm(QWidget, addEditCoffeeForm_ui.Ui_Form):
     def __init__(self, parent, flags, coffee_id=None):
         super().__init__(parent, flags)
-        uic.loadUi('addEditCoffeeForm.ui', self)
+        self.setupUi(self)
         self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.coffee_id = coffee_id
-        self.connection = sqlite3.connect('coffee.sqlite3')
+        self.connection = sqlite3.connect('data/coffee.sqlite3')
 
         if coffee_id:
             self.pushButton.setText('Редактировать')
@@ -150,7 +147,6 @@ class addEditCoffeeForm(QWidget):
         self.descriptionPlainTextEdit.setPlainText(flavor_description)
         self.priceDoubleSpinBox.setValue(price)
         self.volumeOfPackagingSpinBox.setValue(volume_of_packaging)
-
 
     def closeEvent(self, a0):
         self.connection.close()
